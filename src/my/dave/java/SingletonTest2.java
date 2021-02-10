@@ -15,7 +15,7 @@ class Singleton2{
     private Singleton2(){
     }
 
-    public Singleton2 getInstance(){
+    public static Singleton2 getInstance(){
         if(instance == null) instance = new Singleton2();
         return instance;
     }
