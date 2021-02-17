@@ -299,29 +299,6 @@ throw与throws的比较
   - 有属性，且有对应的get、set方法
 - 用户可以使用JavaBean将功能、处理、值、数据库访问和其他任何可以用Java代码创造的对象进行打包，并且其他的开发者可以通过内部的JSP页面、Servle、其他JavaBean、applet程序或者应用来使用这些对象。用户可以认为JavaBean提供了一种随时随地的复制和粘贴的功能，而不用关心任何改变。
 
-## MVC设计模式
-
-MVC是常用的设计模式之一，将整个程序分为三层：**视图模型层，控制器层，数据模型层**。这种将程序输入输出、数据处理，以及数据的展示分离开来的设计模式使程序结构变得灵活而且清晰，同时也描述了程序各个对象间的通信方式，降低了程序的耦合性。
-
-### 模型层 model 主要处理数据
-
-- 数据对象封装  model.bean / domain
-- 数据库操作类  model.dao
-- 数据库        model.db
-
-### 控制层 controller 处理业务逻辑
-
-- 应用界面相关  controller.activity
-- 存放fragment  controller.fragment
-- 显示列表的适配器  controller.adapter
-- 服务相关的    controller.service
-- 抽取的基类    controleer.base
-
-### 视图层 view 显示数据
-
-- 相关工具类    view.util
-- 自定义view    view.ui
-
 ## Java继承
 
 ### 重写
@@ -525,6 +502,33 @@ class ProxyServer implements NetWork{
 - 简单工厂模式：用来生产同一等级结构中的任意产品。（对于增加新的产品，需要修改已有代码）
 - 工厂方法模式：用来生产同一等级结构中的固定产品。（支持增加任意产品）
 - 抽象工厂模式：用来生产不同产品族的全部产品。（对于增加新的产品，无能为力；支持增加产品族）
+
+### MVC设计模式
+
+MVC是常用的设计模式之一，将整个程序分为三层：**视图模型层，控制器层，数据模型层**。这种将程序输入输出、数据处理，以及数据的展示分离开来的设计模式使程序结构变得灵活而且清晰，同时也描述了程序各个对象间的通信方式，降低了程序的耦合性。
+
+#### 模型层 model 主要处理数据
+
+- 数据对象封装  model.bean / domain
+- 数据库操作类  model.dao
+- 数据库        model.db
+
+#### 控制层 controller 处理业务逻辑
+
+- 应用界面相关  controller.activity
+- 存放fragment  controller.fragment
+- 显示列表的适配器  controller.adapter
+- 服务相关的    controller.service
+- 抽取的基类    controleer.base
+
+#### 视图层 view 显示数据
+
+- 相关工具类    view.util
+- 自定义view    view.ui
+
+### 迭代器设计模式
+
+提供一种方法访问一个容器对象中各个元素，而又不需暴露该对象的内部细节。
 
 ## 多线程
 
@@ -908,10 +912,476 @@ public class ProductTest {
 
 ```
 
+## 常用类
+
+### String
+
+1. String类被声明为final，不可被继承
+2. String实现了：
+   1. Serializable接口：表示字符串是支持序列化的
+   2. Comparable接口：表示String可以比较大小
+3. String内部定义里final char[] value用于存储字符串数据
+4. String：代表不可变的字符序列。不可变性。
+   1. 当对字符串重新赋值时，需要重写指定内存区域赋值，不能使用原有的value进行赋值。
+   2. 当对现有的字符串进行连接操作时，也需要重新指定内存区域赋值，不能使用原有的value进行赋值。
+   3. 调用String的replace()方法修改指定的字符或字符串时，也需要重新指定内存区域赋值，不能使用原有的value进行赋值。
+5. 通过字面量的方式给一个字符串赋值，此时的字符串值声明在字符串常量池中。
+6. 字符串常量池中是不会存储相同内容的字符串。
+
+#### String实例化
+
+1. 通过字面量定义的方式:此时"javaEE"声明在方法区的字符串常量池中。
+   `String s1 = "javaEE"`
+2. 通过new + 构造器的方式：此时s2保存的地址值是数据在堆空间中开辟空间以后对应的的地址值。
+   `String s2 = new String("javaEE")`
+3. `s1 != s2` 字符串常量存储在字符串常量池，目的是共享；字符串非常量对象存储在堆中。new的对象中value存储的地址值指向的是字符串常量池中的地址。
+4. 如果加final表示该变量也为一个常量，拼接的话也是相当于字面量拼接。
+
+![20210213160518](http://ruiimg.hifool.cn/img20210213160518.png)
+
+面试题：`String s = new String("abc");` 方式创建对象，在内存中创建了几个对象？
+
+两个：一个是堆空间中new结构，另一个是char型数组对应的常量池中的数据"abc"
+
+![20210213162006](http://ruiimg.hifool.cn/img20210213162006.png)
+
+String.intern()方法返回常量池中的字符串
+
+### String, StringBuffer, StringBuilder三者的异同
+
+- String:
+  - 不可变的字符序列
+  - 底层使用`char[]`存储，final
+- StringBuffer:
+  - 可变的字符序列
+  - 线程安全的，效率低
+  - 底层使用`char[]`存储
+- StringBuilder:
+  - 可变的字符序列
+  - 线程不安全的，效率高
+  - 底层使用`char[]`存储
+
+都继承子charSequence
+
+- StringBuffer 和 StringBuilder都继承自AbstractStringBuilder
+  - 初始化创建一个长度为16的`char[]`数组
+  - 每次append需要判断容量是否足够，进行扩容（ensureCapcityInternal()）
+  - 默认情况下，每次扩容为原来的2倍再加2，原有内容复制到新的数组中
+
+面试题：
+
+```java
+public static void main(String[] args) {
+    String str = null;
+    StringBuilder sb = new StringBuilder();
+    sb.append(str);
+
+    System.out.println(sb.length());    //  4
+
+    System.out.println(sb);     //  "null"
+
+    StringBuilder sb1 = new StringBuilder(str); //exception
+    System.out.println(sb1);
+}
+```
+
+appendNull()
+
+## 注解（Annotation）
+
+是代码里的特殊标记，这些标记可以在编译，类加载，运行时被读取，并执行相应的处理。通过使用Annotation，程序员可以在不改变原有逻辑的情况下，在源文件中嵌入一些补充信息。代码分析工具、开发工具和部署工具可以通过这些补充信息进行验证或者进行部署。
+
+框架 = 注解 + 反射 + 设计模式
+
+### 自定义注解
+
+1. 注解声明为：@interface
+2. 内部定义成员，通常使用value表示
+3. 可以指定成员的默认值，使用default定义
+4. 如果自定义注解没有成员，表明是一个标识作用
+5. 自定义注解必须配上注解的信息处理流程才有意义
+
+### 元注解
+
+对现有注解进行修饰的注解
+
+1. Retention：只能用于修饰一个Annotation定义，用于指定该Annotation的生命周期，包含一个RetentionPolicy类型的成员变量。
+   1. RetentionPolicy.SOURCE：在源文件中有效（即源文件保留），编译器直接丢弃这种策略的注释。
+   2. RetrntionPolicy.CLASS：在class文件中有效（即class保留），当运行java程序时，JVM不会保留注释。这是默认值。
+   3. RetrntionPolicy.RUNTIME：在运行时有效（即运行时保留），当运行java程序时，JVM会保留注释。程序可以通过反射获取该注释。
+   ![20210215155956](http://ruiimg.hifool.cn/img20210215155956.png)
+2. Target：用于指定被修饰的Annotation能用于修饰哪些程序元素
+3. Documented：表示所修饰的Annotation在被javadoc解析时，保留下来
+4. Inherited：被它修饰的Annotation将具有继承性，（子类继承父类上的注解）
+5. Repeatable：可重复注解 jdk 8之后
+
+## Java集合
+
+java集合分为：
+- Collection：单列数据，定义了存取一组对象的方法的集合
+  - List：元素有序、可重复的集合
+  - Set：元素无序、不可重复的集合
+- Map：双列数据，保存具有映射关系“key-value对”的集合
+
+![20210215161840](http://ruiimg.hifool.cn/img20210215161840.png)
+
+![20210215161853](http://ruiimg.hifool.cn/img20210215161853.png)
+
+- 向集合中添加Obj对象，要求对象重写equal()方法（contains()，remove()调用的是equal()方法进行判断）
+
+### 迭代器
+
+- Collection接口继承了java.lang.Iterable接口。
+- iterator()方法返回一个实现了iterator接口的对象
+- 集合对象每次调用iterator()方法都得到一个全新的迭代器对象
+
+### ArrayList,LinkedList,Vector异同
+
+- 同：三个类都实现了List接口，存储数据的特点相同：存储有序、可重复的数据
+- 不同：
+  - ArrayList：
+    - 作为List接口的主要实现类
+    - 线程不安全的，效率高
+    - 底层使用`Object[] elementData`存储
+  - LinkedList：
+    - 底层使用双向链表存储
+    - 对于频繁的插入、删除操作，使用此类效率比ArrayList效率高
+  - Vector：
+    - 作为List接口的古老实现类（jdk 1.0）
+    - 线程安全，效率低
+    - 底层使用`Object[] elementData`存储
+ 
+#### List源码分析
+
+- ArrayList
+  - Jdk 7 之前：
+    - `new ArrayList()`底层创建了长度为10的`Object[]`数组
+    - `grow()`方法扩容，默认扩容为原来的1.5倍
+  - Jdk 8 之后：
+    - `new ArrayList()`底层`Object[] elementData`初始化为`{}`，并没有创建长度为10的数组
+    - 第一次调用`add()`时，底层才创建长度为10的数组
+    - 延迟数组创建，节省内存
+- LinkedList
+  - 内部声明了Node类型的first和last属性，默认值为null
+  - 每次add(e)将e封装到新创建的Node对象中
+- Vector
+  - 使用synchronized保证线程安全
+  - 每次扩容为原来的2倍
+  - new时创建长度为10的array
+
+### Set
+
+- HashSet为例
+1. 无序性：根据数据的哈希值存储
+2. 不可重复性：保证添加的元素按照equals()判断时，不能返回true。即相同的元素只能添加一个。（自定义对象需要重写hashcode()和equals()方法才能生效）
+3. 元素存储使用拉链法，jdk7之前为头插法，jdk8之后使用尾插法
+4. 元素插入时先调用hashcode计算存储位置，如果存储位置相同先比较hash值，如果hash值相同再使用equals()方法，如果返回值为true则舍弃新值，否则拉链发同时存储。
+5. 向Set中添加的数据，其所在类一定要重写hashCode()和equals()方法；重写的两个方法要实现对象相等规则，即：相等的对象必须具有相等的散列码
+- 底层使用HashMap实现，所有value值使用PRESENT一个Object对象来填充
+  ```java
+    private transient HashMap<E,Object> map;
+
+    // Dummy value to associate with an Object in the backing Map
+    private static final Object PRESENT = new Object();
+  ```
+
+- HashSet
+  - Set接口主要实现类
+  - 线程不安全
+  - 可以存储null
+- LinkedHashSet
+  - HashSet子类
+  - 遍历其内部数据时，可以按照添加的顺序遍历
+  - 在添加数据的同时，每个数据还维护了一个双向链表
+  - 对于频繁的遍历操作，效率较高一些
+- TreeSet
+  - 使用红黑树实现
+  - 可以按照添加对象指定属性进行排序
+    - 自然排序，实现Comparable接口
+      - 使用compareTo来比较元素是否相同
+    - 定制排序，实现Comparator接口，传入TreeSet构造方法中
+  - 向TreeSet中添加的数据，要求是相同类的对象。 
+
+- 面试题：
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        HashSet<User> set = new HashSet<>();
+        User u1 = new User("AA", 1001);
+        User u2 = new User("BB", 1002);
+
+        set.add(u1);
+        set.add(u2);
+
+        u1.setName("CC");
+        set.remove(u1);
+        System.out.println(set);
+
+        set.add(new User("CC", 1001));
+        System.out.println(set);
+
+        set.add(new User("AA", 1001));
+        System.out.println(set);
+
+    }
+}
+
+class User{
+    private String name;
+    private int no;
+
+    public User(String name, int no) {
+        this.name = name;
+        this.no = no;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return no == user.no && Objects.equals(name, user.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, no);
+    }
+
+    public int getNo() {
+        return no;
+    }
+
+    public void setNo(int no) {
+        this.no = no;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", no=" + no +
+                '}';
+    }
+}
+
+```
+
+### hashCode()为什么选择31作为系数
+
+1. 选择系数的时候要选择尽量大的系数。因为如果计算出来的hash地址越大，冲突就越少，查找起来效率也会提高。
+2. 31只占用5bits，相乘造成数据溢出的概率较小
+3. 31可以由$i * 31 == (i << 5) - 1$来表示，很多虚拟机里面都有做相关优化。提高算法效率
+4. 31是一个素数，素数使得相乘后减少冲突的概率
+
+### Map
+
+- HashMap
+  - 主要实现类
+  - 线程不安全，效率高
+  - 可以存储null的key和value
+  - 底层实现：
+    - 数组 + 链表 （jdk7之前）
+    - 数组 + 链表 + 红黑树 （jdk 8）
+- LinkedHashMap
+  - HashMap子类
+  - 保证遍历map元素时，可以按照添加的顺序实现遍历
+    - 在原有的HashMap底层结构基础上，维护了双向链表
+    - 对于频繁的遍历操作，此类执行效率较高
+- TreeMap
+  - 保证按照添加的key进行排序，实现排序遍历。
+  - 底层使用红黑树
+- Hashtable
+  - 古老实现类
+  - 线程安全，效率低
+  - 不能存储null的key和value
+- Properties
+  - Hashtable子类
+  - 常用来处理配置文件
+  - key和value都是String类型
+
+#### Map结构的理解
+
+- Mqp中的key：
+  - 无序的、不可重复的
+  - 使用Set存储所有key
+    - key所在的类要重写equals()和hashCode()方法
+- Map中的value：
+  - 无序的、可重复的
+  - 使用Collection存储所有value
+    - 如果使用containsValue()方法，需要重写equals()方法
+- Map中的Entry：
+  - 一个键值对key-value构成了一个Entry对象
+  - 无序的、不可重复的
+  - 使用Set存储所有entry
+
+#### HashMap底层实现
+
+jdk 7：
+
+- `HashMap map = new HashMap();`
+  - 在实例化以后，底层创建了长度是16的一维数组`Entry[] table`
+- `map.put(key1, value1);`
+  1. 调用key1所在类的hashCode()计算key1哈希值，通过计算（`h & (length - 1)`）得到Entry数组中存放的位置
+  2. - 如果此位置上数据为空，则entry添加成功
+     - 如果此位置上的数据不为空，比较当前位置链表上（拉链法）key1和已经存在的一个或多个数据的哈希值：
+       - 如果key1的哈希值与已经存在的数据的哈希值都不相同，此时key1-value1添加成功
+       - 如果key1和已经存在的某一个数据的哈希值相同，继续调用key1所在类的equals()方法
+         - 如果equals()返回false：添加成功
+         - 如果equals()返回true：新值替换旧值
+     - 头插法
+- 默认的扩容方式：扩容为原来的两倍，数据复制过来
+- 数组 + 链表
+- 创建的容量一定为2的整数次幂
+  ```java
+    int capacity = 1;
+    while(capacity < initialCapacity)
+        capacity <<= 1;
+  ```
+- 扩容的条件：map中的数据量超过了临界值（$threshold = loadFactor * cap$）`(size >= threshold) && (null != table[bucketIndex])` 并且 要存放的位置非空
+
+jdk 8：
+- `new HashMap()`时，底层还没有创建一个长度为16的数组
+- jdk8底层的数组是`Node[]`，而非`Entry[]`
+- 首次调用put()方法时，底层创建长度为16的数组
+- 数组 + 链表 + 红黑树
+  - 当某一个索引位置上的元素以链表形式存在的数据个数 > 8 （TREEIFY_THRESHOLD）且当前数组长度 > 64 （MIN_TREEIFY_CAPACITY）时，此时此索引位置上的所有数据改为使用红黑树存储
+  - 查询冲突时提高效率 从$O(n) \rightarrow O(\log(n)))$
+- 扩容的条件变为只要超过临界值就扩容
+
+源码分析：<https://www.bilibili.com/video/BV1Kb411W75N?p=553&spm_id_from=pageDriver>
+
+- DEFAULT_INITIAL_CAPCITY：HashMap默认容量16
+- DEFAULT_LOAD_FACTOR：HashMap默认加载因子0.75
+- threshold：扩容临界值 = 容量 * 填充因子 => 16 * 0.75 = 12
+- TREEIFY_THRESHOLD：Bucket中链表长度大于该默认值，转化为红黑树：8
+- MIN_TREEIFY_CAPACITY：桶中的Node被树化时最小的hash表容量：64
+
+##### LinkedHashMap底层实现
+
+- 在新建立节点时，重写newNode()方法
+  - 新建`LinkedHashMap.Entry<K,V>`对象
+  - 内部类Entry继承了`HashMap.Node<K,V>`
+  - 增加befor, after引用，记录先后插入的顺序
+
+#### TreeMap
+
+- 向TreeMap中添加key-value，要求key必须是由用一个类创建的对象
+- 实现自然排序或者定制排序
+
+#### Properties
+
+jdbc.properties
+- =周围不能有空格
+
+```properties
+name=Tom
+password=abc123
+```
+
+```java
+public class PropertiesTest {
+    public static void main(String[] args) throws Exception {
+        Properties pros = new Properties();
+        FileInputStream fis = new FileInputStream("jdbc.properties");
+        pros.load(fis);
+
+        String name = pros.getProperty("name");
+        String password = pros.getProperty("password");
+
+        System.out.println(name);
+        System.out.println(password);
+        fis.close();
+    }
+}
+```
+
+#### 负载因子值的大小，对于HashMap有什么影响
+
+- 负载因子的大小决定了HashMap的数据密度。
+- 负载因子越大密度越大，发生碰撞的几率越高，数组中的链表越容易长，造成查询或插入时的比较次数增多，性能会下降。
+- 负载因子越小，就越容易出发扩容，数据密度也越小，意味着发生碰撞的几率越小，数组中的链表也就越短，查询和插入时比较的次数也越小，性能会更高。但会浪费一定的内存空间。而且经常扩容也会影响性能。
+- 按照其他语言的参考及研究经验，考虑将负载因子设置为0.7~0.75，此时平均检索长度接近于常数。
+
+#### ConcurrentHashMap与HashTable异同
+
+- 底层采用分段的数组+链表实现，线程安全
+- 通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。(读操作不加锁，由于HashEntry的value变量是 volatile的，也能保证读取到最新的值。)
+- Hashtable的synchronized是针对整张Hash表的，即每次锁住整张表让线程独占，ConcurrentHashMap允许多个修改操作并发进行，其关键在于使用了锁分离技术
+- 有些方法需要跨段，比如size()和containsValue()，它们可能需要锁定整个表而而不仅仅是某个段，这需要按顺序锁定所有段，操作完毕后，又按顺序释放所有段的锁
+- 扩容：段内扩容（段内元素超过该段对应Entry数组长度的75%触发扩容，不会对整个Map进行扩容），插入前检测需不需要扩容，有效避免无效扩容
+
+从类图中可以看出来在存储结构中ConcurrentHashMap比HashMap多出了一个类Segment，而Segment是一个可重入锁。
+
+ConcurrentHashMap是使用了锁分段技术来保证线程安全的。
+
+锁分段技术：首先将数据分成一段一段的存储，然后给每一段数据配一把锁，当一个线程占用锁访问其中一个段数据的时候，其他段的数据也能被其他线程访问。 
+
+ConcurrentHashMap提供了与Hashtable和SynchronizedMap不同的锁机制。Hashtable中采用的锁机制是一次锁住整个hash表，从而在同一时刻只能由一个线程对其进行操作；而ConcurrentHashMap中则是一次锁住一个桶。
+
+ConcurrentHashMap默认将hash表分为16个桶，诸如get、put、remove等常用操作只锁住当前需要用到的桶。这样，原来只能一个线程进入，现在却能同时有16个写线程执行，并发性能的提升是显而易见的。
+
+### Collections
+
+操作Collection、Map的工具类
+
+- reverse(List)：反转List中元素
+- shuffle(List)：对List集合元素进行随机排序
+- sort(List)：排序
+- sort(List, Comparator)：使用比较器排序
+- swap(List, int, int)：将两个位置元素交换
+- max / min(Collection)：根据自然顺序返回集合中最大/小元素
+- max / min(Collection, Comparator)：根据比较器顺序返回集合中最大/小元素
+- frequency(Collection, Object)：返回指定集合中指定元素的出现次数
+- copy(List dest, List src)：将src中的内容复制到dest中
+- replaceAll(List list, Object oldVal, Object newVal)：使用新值替换List对象
+
+Collections提供了多个synchronizedXxx()方法，该方法可将指定集合包装成线程同步的集合，从而解决多线程并发访问集合时的线程安全问题
+
+![20210216223940](http://ruiimg.hifool.cn/img20210216223940.png)
+
+- 相当于给新的Collection对象的所有方法全部嵌套上一个synchronized(mutex)
+
+## 泛型
+
+### 通配符
+
+有限制条件的通配符的使用
+
+- `? extends A`：
+  - `G<? extends A>` 可以作为`G<A>`和`G<B>`的父类的，其中B是A的子类
+- `? super Person`：可以作为`G<A>`和`G<B>`的父类的，其中B是A的父类
+
+## IO流
+
+
+
+## JVM
+
+### 堆
+
+![20210213164102](http://ruiimg.hifool.cn/img20210213164102.png)
+
+1. 新生区（Young Genration Space）
+2. 养老区（Tenure Generation Space）
+3. 永久存储区（Permanent Space）
+
+虽然JVM规范将方法区描述为堆的一个逻辑部分，但它却还有一个别名叫Non-Heap（非堆），目的就是要和堆分开。
+
 ## idea使用
 
 - `ctrl + p` 看方法参数信息或者重载方法
 - `ctrl + alt + t` 环绕方法模板
    ![20210210175750](http://ruiimg.hifool.cn/img20210210175750.png)
 - `alt + insert` 自动创建构造器、setter等
+- `ctrl + alt + ←` 查看代码时回退 → 向前
   
