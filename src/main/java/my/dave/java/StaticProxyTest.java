@@ -4,7 +4,7 @@ package my.dave.java;
  * @author Xu Rui
  * @date 2021/2/9 12:25
  */
-public class ProxyTest {
+public class StaticProxyTest {
     public static void main(String[] args) {
 
         Server server = new Server();
